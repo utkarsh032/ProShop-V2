@@ -18,7 +18,6 @@ const users = [
     name: "Jal Raj",
     email: "jal@email.com",
     password: "bcrypt.hashSync('123456',10)",
-    isAdmin: true,
   },
 ];
 
