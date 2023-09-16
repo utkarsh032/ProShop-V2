@@ -7,7 +7,7 @@ const Footer = () => {
     <footer>
       <Container>
         <Row>
-          <Col className="text-center  py-3">
+          <Col className="text-center py-3">
             <p>ProShop &copy; {currentYear}</p>
           </Col>
         </Row>
@@ -15,5 +15,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;
