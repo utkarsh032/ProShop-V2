@@ -1,9 +1,9 @@
 import asyncHandler from "../middleware/asyncHandler.js";
-import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
 
 // @desc    Auth user & get token
-// @route   POST /api/users/login
+// @route   POST /api/users/auth
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -12,15 +12,15 @@ const authUser = asyncHandler(async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
+      expiresIn: "1h",
     });
 
-    // Set JWT as HTTP-Only cookie
+    // Set JWT as an HTTP-Only cookie
     res.cookie("jwt", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, //30Days
+      secure: process.env.NODE_ENV !== "development", // Use secure cookies in production
+      sameSite: "strict", // Prevent CSRF attacks
+      maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
     });
 
     res.json({
@@ -41,6 +41,17 @@ const authUser = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   res.send("register user");
 });
+
+// @desc    Logout user / clear cookie
+// @route   POST /api/users/logout
+// @access  Public
+const logoutUser = (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logged out successfully" });
+};
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
@@ -87,6 +98,7 @@ const updateUser = asyncHandler(async (req, res) => {
 export {
   authUser,
   registerUser,
+  logoutUser,
   getUserProfile,
   updateUserProfile,
   getUsers,
